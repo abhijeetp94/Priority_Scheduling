@@ -8,7 +8,6 @@ public class Workflow {
     private Long completed_at = 0L;
     ArrayList<Task> tasks;
     transient private Map<Task, ArrayList<Task>> task_graph = new HashMap<>();
-//    transient public Map<Integer, ArrayList<Task>> level_graph = new TreeMap<>();
     transient public ArrayList<ArrayList<Task>> level_graph = new ArrayList<>();
     transient public Map<String, Task> taskMap = new HashMap<>();
 

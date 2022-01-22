@@ -27,9 +27,7 @@ public class Main {
         boolean[] workers = new boolean[worker_count];
         for(int i=0;i<worker_count;i++)
             workers[i] = false;
-//        Map<Workflow, Integer> levelProcessed = new HashMap<>();
-//        for(Workflow workflow: workflows)
-//            levelProcessed.put(workflow, 0);
+
 
         pq.addAll(workflows[0].level_graph.get(0));
         int totalProcessed = 0;
@@ -39,8 +37,11 @@ public class Main {
         for(Workflow workflow: workflows){
             totalCount += workflow.tasks.size();
         }
+
+        // main loop for the algorithm
         while(totalProcessed < totalCount){
             boolean prs = true;
+            // loop to check if any task is available to enter in the ready queue
             for(Workflow workflow: workflows){
                 if(workflow.getScheduled_at() <= time){
                     for(Task task: workflow.getTasks()){
@@ -58,12 +59,13 @@ public class Main {
                     }
                 }
             }
+            // transferring tasks from ready queue to processing queue
             while(!pq.isEmpty() && (taskQueue.size() < worker_count)){
-
                 Task t = pq.poll();
                 t.setStarted_at(time);
                 t.setCompleted_at(time + t.getCost());
                 taskQueue.add(t);
+                // to set the worker
                 for(int i=0;i<worker_count;i++){
                     if(!workers[i]){
                         t.setWorker("w"+(i+1));
@@ -73,6 +75,8 @@ public class Main {
                 }
             }
             boolean flag = true;
+
+            // executing the processing queue
             while (!taskQueue.isEmpty() && flag){
                 if(taskQueue.peek().getCompleted_at() <= time){
                     Task t = taskQueue.poll();
@@ -81,12 +85,7 @@ public class Main {
                     prs = false;
                     int worker = t.getWorker().charAt(1) - '1';
                     workers[worker] = false;
-//                    if(t!=null){
-//
-//                    }
-//                    else {
-//                        break;
-//                    }
+
                 }
                 else {
                     flag = false;
@@ -125,12 +124,11 @@ public class Main {
 
             JsonElement elem = parser.parse(gson.toJson(workflows));
             Gson gson2 = new GsonBuilder().setPrettyPrinting().create();
-//            System.out.println(elem);
             BufferedWriter writer = new BufferedWriter(new FileWriter("./output.json"));
-//            writer.write(elem.toString());
+
             gson2.toJson(elem, writer);
             writer.close();
-//            System.out.println(js);
+
         } catch (Exception e){
             e.printStackTrace();
         }
